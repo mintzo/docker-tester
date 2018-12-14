@@ -1,5 +1,10 @@
-const { expect } = require('chai');
+/* eslint-disable prefer-promise-reject-errors */
+const chai = require('chai');
 const sandbox = require('sinon').createSandbox();
+chai.use(require('chai-as-promised'));
+
+const { expect } = chai;
+
 const TestingEnvironment = require('../../src/index');
 const testData = require('./test-data');
 const Errors = require('../../src/errors');
@@ -7,7 +12,8 @@ const Errors = require('../../src/errors');
 const dockerFiles = { missing: 'missing.docker-compose.yml',
   working: 'test.docker-compose.yml',
   corrupt: 'corrupt.docker-compose.yml',
-  noVerifications: 'no-verifications.docker-compose.yml' };
+  noVerifications: 'no-verifications.docker-compose.yml',
+  mixed: 'mixed.yml' };
 const verificationTypes = { simple: { promise: () => {} }, missing: { property: true }, notFunctions: { promise: true } };
 const verifications = { working: { postgres: verificationTypes.simple, node: verificationTypes.simple },
   notFunctions: { node: verificationTypes.notFunctions },
@@ -99,5 +105,21 @@ describe('getVerificationPromise', () => {
   it('should get verification promise', () => {
     const test = new TestingEnvironment({ verifications: { ...verifications.working, node: { promise: 42 } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
     expect(test.getVerificationPromise({ serviceName: 'node-test' })).to.equal(42);
+  });
+});
+const promiseRetryOptions = { retries: 0 };
+describe('verifyServiceIsReady', () => {
+  it('should handel no verifications services', async () => {
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    await test.verifyServiceIsReady({ serviceName: 'test' });
+    await test.verifyServiceIsReady({ serviceName: 'test2' });
+  });
+  it('should reject a service that is down', async () => {
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.reject('cant'), promiseRetryOptions } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    await expect(test.verifyServiceIsReady({ serviceName: 'test3' })).to.eventually.be.rejectedWith(Errors.CannotVerifyServiceIsUpError);
+  });
+  it('should wait for service', async () => {
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    await test.verifyServiceIsReady({ serviceName: 'test3' });
   });
 });

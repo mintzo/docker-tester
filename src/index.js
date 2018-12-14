@@ -1,5 +1,5 @@
 const dockerCompose = require('docker-compose');
-// const promiseRetry = require('promise-retry');
+const promiseRetry = require('promise-retry');
 const yaml = require('yamljs');
 
 const Errors = require('./errors');
@@ -30,15 +30,38 @@ module.exports = class TestingEnvironment {
     return this.services[serviceName];
   }
 
-  getVerificationPromise({ serviceName }) {
+  getServiceVerificationType(serviceName) {
     Errors.throwIf(this.getService(serviceName).environment && this.getService(serviceName).environment.verificationType, new Errors.MissingVerificationError(serviceName));
     const { verificationType } = this.getService(serviceName).environment;
-    return this.verifications[verificationType].promise;
+    return verificationType;
+  }
+
+  getVerificationPromise({ serviceName }) { return this.verifications[this.getServiceVerificationType(serviceName)].promise; }
+
+  getRetryOptions({ serviceName }) {
+    if (this.verifications[this.getServiceVerificationType(serviceName)].promiseRetryOptions) {
+      return { ...this.defaultPromiseRetryOptions, ...(this.verifications[this.getServiceVerificationType(serviceName)].promiseRetryOptions) };
+    }
+    return { ...this.defaultPromiseRetryOptions };
   }
 
   /* istanbul ignore next */
   log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
 
+  async verifyServiceIsReady({ serviceName }) {
+    this.log(`Verifying the service '${serviceName}' is up`);
+    try {
+      const verificationPromise = this.getVerificationPromise({ serviceName });
+      await promiseRetry((retry, attemptNumber) => {
+        this.log(`trying to verify if service '${serviceName} is up. (attempt number ${attemptNumber})`);
+        return verificationPromise().catch(retry);
+      }, this.getRetryOptions({ serviceName }));
+    } catch (error) {
+      if (!(error instanceof Errors.MissingVerificationError)) {
+        throw new Errors.CannotVerifyServiceIsUpError(serviceName, error);
+      }
+    }
+  }
 
   // async verifyAllServices() {
   //   const servicesVerificationPromises = Object.keys(this.services).map((serviceName) => {

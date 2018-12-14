@@ -44,6 +44,11 @@ class MissingServiceError extends Error {
   }
 }
 
+class CannotVerifyServiceIsUpError extends Error {
+  constructor(serviceName, error) {
+    super(`Cannot verify that service '${serviceName}' is up using the verification promise \n\n Error: ${error}`);
+  }
+}
 
 module.exports = {
   throwIf,
@@ -54,4 +59,5 @@ module.exports = {
   MissingVerificationPromiseError,
   MissingVerificationError,
   MissingServiceError,
+  CannotVerifyServiceIsUpError,
 };

@@ -10,3 +10,10 @@ services:
     image: postgres:9.4
     ports:
       - 5535:5432
+  test3:
+    image: postgres:9.4
+    ports:
+      - 5535:5432
+    environment:
+      verificationType: httpServer
+      POSTGRES_DB: test_db
