@@ -32,6 +32,18 @@ class MissingVerificationPromiseError extends Error {
   }
 }
 
+class MissingVerificationError extends Error {
+  constructor(serviceName) {
+    super(`verification was not set for the service: ${serviceName}`);
+  }
+}
+
+class MissingServiceError extends Error {
+  constructor(serviceName) {
+    super(`the service: ${serviceName}, was not defined in the docker compose file`);
+  }
+}
+
 
 module.exports = {
   throwIf,
@@ -40,4 +52,6 @@ module.exports = {
   LoadingDockerComposeError,
   MissingVerificationTypeError,
   MissingVerificationPromiseError,
+  MissingVerificationError,
+  MissingServiceError,
 };

@@ -9,8 +9,10 @@ const requiredFields = ({ dockerComposeFileLocation, dockerFileName, verificatio
 const checkServicesDefinition = ({ services, verifications, dockerComposeFileJson }) => {
   Errors.throwIf(dockerComposeFileJson.services, new Errors.MissingServicesInDockerComposeError());
   Object.keys(services).forEach((serviceName) => {
-    const { verificationType } = services[serviceName].environment;
-    Errors.throwIf(verifications[verificationType], new Errors.MissingVerificationTypeError(verificationType));
+    if (services[serviceName].environment && services[serviceName].environment.verificationType) {
+      const { verificationType } = services[serviceName].environment;
+      Errors.throwIf(verifications[verificationType], new Errors.MissingVerificationTypeError(verificationType));
+    }
   });
 };
 

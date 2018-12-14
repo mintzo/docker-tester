@@ -4,13 +4,16 @@ const TestingEnvironment = require('../../src/index');
 const testData = require('./test-data');
 const Errors = require('../../src/errors');
 
-describe('Testing missing parameters errors', () => {
-  const dockerFiles = { missing: 'missing.docker-compose.yml', working: 'test.docker-compose.yml', corrupt: 'corrupt.docker-compose.yml' };
-  const verificationTypes = { simple: { promise: () => {} }, missing: { property: true }, notFunctions: { promise: true } };
-  const verifications = { working: { postgres: verificationTypes.simple, node: verificationTypes.simple },
-    notFunctions: { node: verificationTypes.notFunctions },
-    missing: { postgres: verificationTypes.missing, node: verificationTypes.missing } };
+const dockerFiles = { missing: 'missing.docker-compose.yml',
+  working: 'test.docker-compose.yml',
+  corrupt: 'corrupt.docker-compose.yml',
+  noVerifications: 'no-verifications.docker-compose.yml' };
+const verificationTypes = { simple: { promise: () => {} }, missing: { property: true }, notFunctions: { promise: true } };
+const verifications = { working: { postgres: verificationTypes.simple, node: verificationTypes.simple },
+  notFunctions: { node: verificationTypes.notFunctions },
+  missing: { postgres: verificationTypes.missing, node: verificationTypes.missing } };
 
+describe('Testing missing parameters errors', () => {
   it('should throw missing parameter', () => {
     expect(() => {
       const test = new TestingEnvironment();
@@ -67,5 +70,34 @@ describe('Testing missing parameters errors', () => {
     expect(() => {
       const test = new TestingEnvironment({ verifications: { node: verificationTypes.missing }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
     }).to.throw(Errors.MissingVerificationTypeError);
+  });
+});
+
+describe('getService', () => {
+  it('should handel missing service', () => {
+    const test = new TestingEnvironment({ verifications: { ...verifications.working, node: { promise: 42 } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
+    expect(() => test.getService('nonExisting')).to.throw(Errors.MissingServiceError);
+  });
+
+  it('should get service', () => {
+    const test = new TestingEnvironment({ verifications: { ...verifications.working, node: { promise: 42 } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
+    expect(test.getService('node-test')).to.deep.equal(testData.servicesJson['node-test']);
+  });
+});
+
+describe('getVerificationPromise', () => {
+  it('should handel missing verifications', () => {
+    const test = new TestingEnvironment({ verifications: {}, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.noVerifications });
+    expect(() => test.getVerificationPromise({ serviceName: 'test' })).to.throw(Errors.MissingVerificationError);
+  });
+
+  it('should handel missing service', () => {
+    const test = new TestingEnvironment({ verifications: { ...verifications.working, node: { promise: 42 } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
+    expect(() => test.getVerificationPromise({ serviceName: 'test' })).to.throw(Errors.MissingServiceError);
+  });
+
+  it('should get verification promise', () => {
+    const test = new TestingEnvironment({ verifications: { ...verifications.working, node: { promise: 42 } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
+    expect(test.getVerificationPromise({ serviceName: 'node-test' })).to.equal(42);
   });
 });

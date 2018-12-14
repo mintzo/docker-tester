@@ -1,12 +1,14 @@
 const dockerCompose = require('docker-compose');
 // const promiseRetry = require('promise-retry');
 const yaml = require('yamljs');
+
 const Errors = require('./errors');
 const inputValidations = require('./input-validation');
 
 module.exports = class TestingEnvironment {
   constructor({ dockerComposeFileLocation, dockerFileName, verifications, enableLogs }) {
     this.enableLogs = !!enableLogs || false;
+    this.defaultPromiseRetryOptions = { retries: 5 };
     inputValidations.requiredFields({ dockerComposeFileLocation, dockerFileName, verifications });
 
     this.dockerComposeFileLocation = dockerComposeFileLocation;
@@ -21,24 +23,22 @@ module.exports = class TestingEnvironment {
     inputValidations.checkVerifications({ verifications: this.verifications });
   }
 
-  get services() {
-    return this.dockerComposeFileJson.services;
+  get services() { return this.dockerComposeFileJson.services; }
+
+  getService(serviceName) {
+    Errors.throwIf(this.services[serviceName], new Errors.MissingServiceError(serviceName));
+    return this.services[serviceName];
+  }
+
+  getVerificationPromise({ serviceName }) {
+    Errors.throwIf(this.getService(serviceName).environment && this.getService(serviceName).environment.verificationType, new Errors.MissingVerificationError(serviceName));
+    const { verificationType } = this.getService(serviceName).environment;
+    return this.verifications[verificationType].promise;
   }
 
   /* istanbul ignore next */
   log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
 
-  // async verifyServiceIsReady({ serviceName }) {
-  //   this.log(`Verifying the service '${serviceName}' is up`);
-  //   try {
-  //     await promiseRetry((retry, number) => {
-  //       console.log('attempt number', number);
-  //       return verificationPromise().catch(retry);
-  //     }, { retries: 4 });
-  //   } catch (error) {
-  //     throw new Error(`Cannot verify that service '${serviceName}' is up using the verification promise \n\n Error: ${error}`);
-  //   }
-  // }
 
   // async verifyAllServices() {
   //   const servicesVerificationPromises = Object.keys(this.services).map((serviceName) => {
