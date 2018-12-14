@@ -24,26 +24,25 @@ module.exports = class TestingEnvironment {
     this.dockerComposeOptions = { cwd: dockerComposeFileLocation };
     try {
       this.dockerComposeFileJson = yaml.load(`${dockerComposeFileLocation}/${dockerFileName}`);
+      assert(this.dockerComposeFileJson.services, `${missingVariableMessage('services')}, in the docker-compose file`);
     } catch (error) {
       throw new Error(`Cannot load docker-compose file , ${dockerComposeFileLocation}/${dockerFileName}} \n Error: ${error}`);
     }
+    this.checkServicesDefinition();
   }
-
-  // checkServicesDefinition() {
-  //   Object.keys(this.services).forEach((serviceName) => {
-
-  //   });
-  // }
-
-  log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
 
   get services() {
     return this.dockerComposeFileJson.services;
   }
 
-  async stop() {
-    this.log('stopping all services');
-    await dockerCompose.down(this.dockerComposeOptions);
+  /* istanbul ignore next */
+  log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
+
+  checkServicesDefinition() {
+    Object.keys(this.services).forEach((serviceName) => {
+      const { verificationType } = this.services[serviceName].environment;
+      assert(this.verifications[verificationType], `verification type '${verificationType}' , was not sent in the constructor correctly`);
+    });
   }
 
   // async verifyServiceIsReady({ serviceName, verificationPromise }) {
@@ -70,6 +69,13 @@ module.exports = class TestingEnvironment {
   //   // return Promise.all(servicesVerificationPromises);
   // }
 
+  /* istanbul ignore next */
+  async stop() {
+    this.log('stopping all services');
+    await dockerCompose.down(this.dockerComposeOptions);
+  }
+
+  /* istanbul ignore next */
   async start({ stopIfUp, verifyUp }) {
     if (stopIfUp) { await this.stop(); }
 

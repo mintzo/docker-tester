@@ -8,3 +8,16 @@ services:
     environment:
       verificationType: postgres
       POSTGRES_DB: test_db
+  node-test:
+    image: node
+    ports:
+      - 5005:5432
+    environment:
+      verificationType: node
+  moore-nodejs-test:
+    image: node
+    restart: always
+    ports:
+      - 9994:5432
+    environment:
+      verificationType: node
