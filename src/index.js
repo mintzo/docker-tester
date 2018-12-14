@@ -1,34 +1,24 @@
-const assert = require('assert');
 const dockerCompose = require('docker-compose');
 // const promiseRetry = require('promise-retry');
 const yaml = require('yamljs');
-
-// const verificationTypes = {
-//   postgres: 'postgres',
-// };
-
-const missingVariableMessage = variableName => `Missing required variable name ${variableName}`;
+const Errors = require('./errors');
+const inputValidations = require('./input-validation');
 
 module.exports = class TestingEnvironment {
   constructor({ dockerComposeFileLocation, dockerFileName, verifications, enableLogs }) {
     this.enableLogs = !!enableLogs || false;
-    assert(dockerComposeFileLocation, missingVariableMessage('dockerComposeFileLocation'));
+    inputValidations.requiredFields({ dockerComposeFileLocation, dockerFileName, verifications });
+
     this.dockerComposeFileLocation = dockerComposeFileLocation;
-
-    assert(dockerFileName, missingVariableMessage('dockerFileName'));
     this.dockerFileName = dockerFileName;
-
-    assert(verifications, missingVariableMessage('verifications'));
     this.verifications = verifications;
 
     this.dockerComposeOptions = { cwd: dockerComposeFileLocation };
-    try {
-      this.dockerComposeFileJson = yaml.load(`${dockerComposeFileLocation}/${dockerFileName}`);
-      assert(this.dockerComposeFileJson.services, `${missingVariableMessage('services')}, in the docker-compose file`);
-    } catch (error) {
-      throw new Error(`Cannot load docker-compose file , ${dockerComposeFileLocation}/${dockerFileName}} \n Error: ${error}`);
+    try { this.dockerComposeFileJson = yaml.load(`${dockerComposeFileLocation}/${dockerFileName}`); } catch (error) {
+      throw new Errors.LoadingDockerComposeError(`${dockerComposeFileLocation}/${dockerFileName}`, error);
     }
-    this.checkServicesDefinition();
+    inputValidations.checkServicesDefinition({ services: this.services, verifications: this.verifications, dockerComposeFileJson: this.dockerComposeFileJson });
+    inputValidations.checkVerifications({ verifications: this.verifications });
   }
 
   get services() {
@@ -38,23 +28,15 @@ module.exports = class TestingEnvironment {
   /* istanbul ignore next */
   log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
 
-  checkServicesDefinition() {
-    Object.keys(this.services).forEach((serviceName) => {
-      const { verificationType } = this.services[serviceName].environment;
-      assert(this.verifications[verificationType], `verification type '${verificationType}' , was not sent in the constructor correctly`);
-    });
-  }
-
-  // async verifyServiceIsReady({ serviceName, verificationPromise }) {
-  //   console.log(`varifing ${serviceName} is up`);
+  // async verifyServiceIsReady({ serviceName }) {
+  //   this.log(`Verifying the service '${serviceName}' is up`);
   //   try {
   //     await promiseRetry((retry, number) => {
   //       console.log('attempt number', number);
   //       return verificationPromise().catch(retry);
   //     }, { retries: 4 });
   //   } catch (error) {
-  //     console.error(error);
-  //     throw new Error(`Cannot verify that service '${serviceName}' is up using the verification promise`);
+  //     throw new Error(`Cannot verify that service '${serviceName}' is up using the verification promise \n\n Error: ${error}`);
   //   }
   // }
 
