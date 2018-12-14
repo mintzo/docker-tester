@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+  test-postgres-db:
+    image: postgres:9.4
+    # restart: always
+    ports:
+      - 5555:5432
+    environment:
+      verificationType: postgres
+      POSTGRES_DB: test_db
