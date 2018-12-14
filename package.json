@@ -2,9 +2,17 @@
   "name": "docker-testing",
   "version": "1.0.0",
   "description": "Start a testing environment with a docker-compose file and verify its up before running tests",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "test": "npm run test:unit",
+    "test:unit": "nyc mocha ./test/unit/*.spec.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm test"
+    }
   },
   "repository": {
     "type": "git",
@@ -22,5 +30,20 @@
   "bugs": {
     "url": "https://github.com/mintzo/docker-testing/issues"
   },
-  "homepage": "https://github.com/mintzo/docker-testing#readme"
+  "homepage": "https://github.com/mintzo/docker-testing#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.10.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-node": "^4.0.0",
+    "husky": "^1.2.1",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "sinon": "^7.2.2"
+  },
+  "dependencies": {
+    "docker-compose": "^0.9.2",
+    "promise-retry": "^1.1.1",
+    "yamljs": "^0.3.0"
+  }
 }
