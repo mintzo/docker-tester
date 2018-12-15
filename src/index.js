@@ -1,16 +1,16 @@
-const dockerCompose = require('docker-compose');
 const promiseRetry = require('promise-retry');
 const yaml = require('yamljs');
 
+const DockerCompose = require('./docker-compose');
 const Errors = require('./errors');
 const inputValidations = require('./input-validation');
 
 module.exports = class TestingEnvironment {
   constructor({ dockerComposeFileLocation, dockerFileName, verifications, enableLogs }) {
     this.enableLogs = !!enableLogs || false;
-    this.defaultPromiseRetryOptions = { retries: 5 };
+    this.defaultPromiseRetryOptions = { retries: 4 };
     inputValidations.requiredFields({ dockerComposeFileLocation, dockerFileName, verifications });
-
+    this.dockerCompose = new DockerCompose(`${dockerComposeFileLocation}/${dockerFileName}`);
     this.dockerComposeFileLocation = dockerComposeFileLocation;
     this.dockerFileName = dockerFileName;
     this.verifications = verifications;
@@ -23,7 +23,12 @@ module.exports = class TestingEnvironment {
     inputValidations.checkVerifications({ verifications: this.verifications });
   }
 
+  /* istanbul ignore next */
+  log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
+
   get services() { return this.dockerComposeFileJson.services; }
+
+  get serviceNames() { return Object.keys(this.services); }
 
   getService(serviceName) {
     Errors.throwIf(this.services[serviceName], new Errors.MissingServiceError(serviceName));
@@ -45,16 +50,13 @@ module.exports = class TestingEnvironment {
     return { ...this.defaultPromiseRetryOptions };
   }
 
-  /* istanbul ignore next */
-  log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
-
   async verifyServiceIsReady({ serviceName }) {
     this.log(`Verifying the service '${serviceName}' is up`);
     try {
       const verificationPromise = this.getVerificationPromise({ serviceName });
       await promiseRetry((retry, attemptNumber) => {
         this.log(`trying to verify if service '${serviceName} is up. (attempt number ${attemptNumber})`);
-        return verificationPromise().catch(retry);
+        return verificationPromise(this.getService(serviceName)).catch(retry);
       }, this.getRetryOptions({ serviceName }));
     } catch (error) {
       if (!(error instanceof Errors.MissingVerificationError)) {
@@ -63,29 +65,22 @@ module.exports = class TestingEnvironment {
     }
   }
 
-  // async verifyAllServices() {
-  //   const servicesVerificationPromises = Object.keys(this.services).map((serviceName) => {
-  //     if (this.services[serviceName].environment.verification) {
-  //       return this.verifyServiceIsReady({ serviceName, verificationPromise: this.servicesVerificationTests.postgres });
-  //     }
-  //     return Promise.resolve();
-  //   });
-  //   return Promise.resolve();
-  //   // return Promise.all(servicesVerificationPromises);
-  // }
+  async verifyAllServices() {
+    return Promise.all(this.serviceNames.map(serviceName => this.verifyServiceIsReady({ serviceName })));
+  }
 
   /* istanbul ignore next */
   async stop() {
     this.log('stopping all services');
-    await dockerCompose.down(this.dockerComposeOptions);
+    await this.dockerCompose.down(this.dockerComposeOptions);
   }
 
   /* istanbul ignore next */
   async start({ stopIfUp, verifyUp }) {
     if (stopIfUp) { await this.stop(); }
 
-    this.log(`starting services from docker-compose ${this.dockerFileName}`);
-    await dockerCompose.upAll(this.dockerComposeOptions);
+    this.log(`starting services from docker-compose ${this.dockerComposeOptions.cwd}/${this.dockerFileName}`);
+    await this.dockerCompose.upAll(this.dockerComposeOptions);
 
     if (verifyUp) { await this.verifyAllServices(); }
   }

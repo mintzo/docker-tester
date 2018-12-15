@@ -5,8 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run test:unit",
-    "test:unit": "nyc mocha ./test/unit/*.spec.js"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "nyc mocha ./test/unit/*.spec.js",
+    "test:e2e": "mocha --delay ./test/e2e/*.spec.js"
   },
   "husky": {
     "hooks": {
@@ -32,7 +33,9 @@
   },
   "homepage": "https://github.com/mintzo/docker-testing#readme",
   "devDependencies": {
+    "axios": "^0.18.0",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-node": "^4.0.0",
@@ -42,7 +45,6 @@
     "sinon": "^7.2.2"
   },
   "dependencies": {
-    "docker-compose": "^0.9.2",
     "promise-retry": "^1.1.1",
     "yamljs": "^0.3.0"
   }

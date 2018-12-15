@@ -123,3 +123,9 @@ describe('verifyServiceIsReady', () => {
     await test.verifyServiceIsReady({ serviceName: 'test3' });
   });
 });
+describe('verifyAllServices', () => {
+  it('should handel no verifications services', async () => {
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    await test.verifyAllServices();
+  });
+});

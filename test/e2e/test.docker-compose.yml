@@ -1,0 +1,38 @@
+version: '3.1'
+services:
+  http-test:
+    image: nginxdemos/hello
+    ports:
+      - 7000:80
+    environment:
+      verificationType: httpServer
+  http-test_2:
+    image: nginxdemos/hello
+    ports:
+      - 7001:80
+    environment:
+      verificationType: httpServer
+  http-test_3:
+    image: nginxdemos/hello
+    ports:
+      - 7002:80
+    environment:
+      verificationType: httpServer
+  http-test_4:
+    image: nginxdemos/hello
+    ports:
+      - 7003:80
+    environment:
+      verificationType: httpServer
+  http-test_5:
+    image: nginxdemos/hello
+    ports:
+      - 7004:80
+    environment:
+      verificationType: httpServer
+  # test3:
+  #   image: postgres:9.4
+  #   ports:
+  #     - 5535:5432
+  #   environment:
+  #     POSTGRES_DB: test_db
