@@ -1,5 +1,5 @@
 {
-  "name": "docker-test",
+  "name": "docker-tester",
   "version": "1.0.2",
   "description": "Start a testing environment with a docker-compose file and verify its up before running tests",
   "main": "src/index.js",
@@ -29,9 +29,9 @@
   "author": "Omer M",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mintzo/docker-test/issues"
+    "url": "https://github.com/mintzo/docker-tester/issues"
   },
-  "homepage": "https://github.com/mintzo/docker-test#readme",
+  "homepage": "https://github.com/mintzo/docker-tester#readme",
   "devDependencies": {
     "axios": "^0.18.0",
     "chai": "^4.2.0",
