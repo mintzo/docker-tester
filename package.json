@@ -1,6 +1,6 @@
 {
   "name": "docker-test",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Start a testing environment with a docker-compose file and verify its up before running tests",
   "main": "src/index.js",
   "scripts": {
