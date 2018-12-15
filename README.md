@@ -16,7 +16,6 @@ npm i docker-tester --save-dev
 ```
 *  _docker and docker-compose are required to be installed and acsecible from the terminal, you can [get it here](https://docs.docker.com/compose/install/)_
 
------------
 ## Example
 ### running tests in mocha
 ```js
@@ -36,7 +35,7 @@ const testingEnvironment = new TestingEnvironment({
 
 (
   async () => {
-  await testingEnvironment.start({ stopIfUp: true, verifyUp: true });
+  await testingEnvironment.start();
   run();  //starts mocha tests
 })();
 
@@ -117,7 +116,7 @@ starts all services found in the docker-compose file _(``docker-compose up -d``)
 
 optional settings:
 
-* ```stopIfUp``` - _(default: false)_  - runs ```.stop()``` before starting services
+* ```stopIfUp``` - _(default: true)_  - runs ```.stop()``` before starting services
 * ```verifyUp``` - _(default: true)_ - runs ```.verifyAllServices()``` after starting services
 
 example code:
@@ -126,7 +125,7 @@ const testingEnvironment = new TestingEnvironment({
   // required options...
 });
 
-await testingEnvironment.start({ stopIfUp: true });
+await testingEnvironment.start();
 ```
 
 ### .stop()

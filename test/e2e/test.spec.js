@@ -17,7 +17,7 @@ const testingEnvironment = new TestingEnvironment({ enableLogs: true,
   promiseRetryOptions: { retries: 4 } } } });
 
 (async () => {
-  const results = await testingEnvironment.start({ stopIfUp: true });
+  const results = await testingEnvironment.start();
   require('./sample-tests');
   run();
 })();

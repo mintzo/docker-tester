@@ -76,12 +76,12 @@ module.exports = class TestingEnvironment {
   }
 
   /* istanbul ignore next */
-  async start({ stopIfUp, verifyUp }) {
+  async start({ stopIfUp, verifyUp } = { stopIfUp: true, verifyUp: true }) {
     if (stopIfUp) { await this.stop(); }
 
     this.log(`starting services from docker-compose ${this.dockerComposeOptions.cwd}/${this.dockerFileName}`);
     await this.dockerCompose.upAll(this.dockerComposeOptions);
 
-    if (verifyUp !== false) { await this.verifyAllServices(); }
+    if (verifyUp) { await this.verifyAllServices(); }
   }
 };
