@@ -82,6 +82,6 @@ module.exports = class TestingEnvironment {
     this.log(`starting services from docker-compose ${this.dockerComposeOptions.cwd}/${this.dockerFileName}`);
     await this.dockerCompose.upAll(this.dockerComposeOptions);
 
-    if (verifyUp) { await this.verifyAllServices(); }
+    if (verifyUp !== false) { await this.verifyAllServices(); }
   }
 };
