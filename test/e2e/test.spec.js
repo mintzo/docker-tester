@@ -5,8 +5,7 @@ const sandbox = require('sinon').createSandbox();
 const axios = require('axios');
 const TestingEnvironment = require('../../src/index');
 
-const testingEnvironment = new TestingEnvironment({ enableLogs: true,
-  dockerComposeFileLocation: __dirname,
+const testingEnvironment = new TestingEnvironment({ dockerComposeFileLocation: __dirname,
   dockerFileName: 'test.docker-compose.yml',
   verifications: { httpServer: { promise: async (service) => {
     const port = service.ports[0].exposed;
@@ -16,11 +15,12 @@ const testingEnvironment = new TestingEnvironment({ enableLogs: true,
   },
   promiseRetryOptions: { retries: 4 } } } });
 
-(async () => {
-  const results = await testingEnvironment.start();
-  require('./sample-tests');
-  run();
-})();
+before(async function () {
+  this.timeout(0);
+  await testingEnvironment.start();
+});
+
+require('./sample-tests');
 
 after(async function () {
   this.timeout(0);

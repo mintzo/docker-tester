@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "nyc mocha ./test/unit/*.spec.js",
-    "test:e2e": "mocha --delay ./test/e2e/*.spec.js"
+    "test:e2e": "mocha ./test/e2e/*.spec.js"
   },
   "husky": {
     "hooks": {

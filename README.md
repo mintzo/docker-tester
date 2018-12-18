@@ -33,11 +33,11 @@ const testingEnvironment = new TestingEnvironment({
       },  promiseRetryOptions: { retries: 4 } }
   } });
 
-(
-  async () => {
+// starting environment before running tests
+before(async function () {
+  this.timeout(0);
   await testingEnvironment.start();
-  run();  //starts mocha tests
-})();
+});
 
 // stopping environment after tests are done
 after(async function () {
@@ -96,7 +96,7 @@ optional:
   * ```promise``` - *required* , the promise function to verify the service, receives the service information when called
   * ```promiseRetryOptions``` - _(optional)_ - promise retry settings, same as [promise-retry](https://www.npmjs.com/package/promise-retry)
     * ```retries``` - number of retries , _default 5_
-* ```enableLogs``` - logs to console docker-tester actions, when set to ```true```
+* ```disableLogs``` - disables logs docker-tester actions, when set to ```true```
 
 example options object:
 ```js
