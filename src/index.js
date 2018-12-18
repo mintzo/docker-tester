@@ -24,7 +24,7 @@ module.exports = class TestingEnvironment {
   }
 
   /* istanbul ignore next */
-  log(whatToLog) { if (!this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
+  log(whatToLog) { if (!this.disableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
 
   get services() { return this.dockerComposeFileJson.services; }
 

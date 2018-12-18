@@ -71,10 +71,10 @@ describe('Testing missing parameters errors', () => {
   });
   it('should handel missing verifications', () => {
     expect(() => {
-      const test = new TestingEnvironment({ verifications: verifications.missing, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
+      const test = new TestingEnvironment({ verifications: verifications.missing, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: true });
     }).to.throw(Errors.MissingVerificationPromiseError);
     expect(() => {
-      const test = new TestingEnvironment({ verifications: { node: verificationTypes.missing }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
+      const test = new TestingEnvironment({ verifications: { node: verificationTypes.missing }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: true });
     }).to.throw(Errors.MissingVerificationTypeError);
   });
 });
@@ -110,22 +110,22 @@ describe('getVerificationPromise', () => {
 const promiseRetryOptions = { retries: 0 };
 describe('verifyServiceIsReady', () => {
   it('should handel no verifications services', async () => {
-    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed, disableLogs: true });
     await test.verifyServiceIsReady({ serviceName: 'test' });
     await test.verifyServiceIsReady({ serviceName: 'test2' });
   });
   it('should reject a service that is down', async () => {
-    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.reject('cant'), promiseRetryOptions } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.reject('cant'), promiseRetryOptions } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed, disableLogs: true });
     await expect(test.verifyServiceIsReady({ serviceName: 'test3' })).to.eventually.be.rejectedWith(Errors.CannotVerifyServiceIsUpError);
   });
   it('should wait for service', async () => {
-    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed, disableLogs: true });
     await test.verifyServiceIsReady({ serviceName: 'test3' });
   });
 });
 describe('verifyAllServices', () => {
   it('should handel no verifications services', async () => {
-    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed });
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed, disableLogs: true });
     await test.verifyAllServices();
   });
 });
