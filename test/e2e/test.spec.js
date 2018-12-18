@@ -9,7 +9,7 @@ const testingEnvironment = new TestingEnvironment({ enableLogs: true,
   dockerComposeFileLocation: __dirname,
   dockerFileName: 'test.docker-compose.yml',
   verifications: { httpServer: { promise: async (service) => {
-    const port = service.ports[0].split(':')[0];
+    const port = service.ports[0].exposed;
     const healthCheckUrl = `http://localhost:${port}`;
     const result = await axios.get(healthCheckUrl);
     return result;

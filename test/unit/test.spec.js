@@ -87,7 +87,7 @@ describe('getService', () => {
 
   it('should get service', () => {
     const test = new TestingEnvironment({ verifications: { ...verifications.working, node: { promise: 42 } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working });
-    expect(test.getService('node-test')).to.deep.equal(testData.servicesJson['node-test']);
+    expect(test.getService('node-test')).to.deep.equal(testData.serviceJson['node-test']);
   });
 });
 

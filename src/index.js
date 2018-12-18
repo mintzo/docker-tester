@@ -4,6 +4,7 @@ const yaml = require('yamljs');
 const DockerCompose = require('./docker-compose');
 const Errors = require('./errors');
 const inputValidations = require('./input-validation');
+const { buildServiceObjectFromJson } = require('./services');
 
 module.exports = class TestingEnvironment {
   constructor({ dockerComposeFileLocation, dockerFileName, verifications, disableLogs }) {
@@ -32,7 +33,7 @@ module.exports = class TestingEnvironment {
 
   getService(serviceName) {
     Errors.throwIf(this.services[serviceName], new Errors.MissingServiceError(serviceName));
-    return this.services[serviceName];
+    return buildServiceObjectFromJson(this.services[serviceName]);
   }
 
   getServiceVerificationType(serviceName) {
