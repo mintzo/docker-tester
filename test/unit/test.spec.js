@@ -52,22 +52,22 @@ describe('Testing missing parameters errors', () => {
     }).to.throw(Errors.MissingServicesInDockerComposeError);
   });
   it('should handel logEnabled', () => {
-    const test = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, enableLogs: undefined });
-    expect(test.enableLogs).to.be.false;
-    test.enableLogs = true;
-    expect(test.enableLogs).to.be.true;
+    const test = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: undefined });
+    expect(test.disableLogs).to.be.false;
+    test.disableLogs = true;
+    expect(test.disableLogs).to.be.true;
 
-    const test2 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, enableLogs: false });
-    expect(test2.enableLogs).to.be.false;
+    const test2 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: false });
+    expect(test2.disableLogs).to.be.false;
 
-    const test3 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, enableLogs: 23 });
-    expect(test3.enableLogs).to.be.true;
+    const test3 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: 23 });
+    expect(test3.disableLogs).to.be.true;
 
-    const test4 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, enableLogs: 'test' });
-    expect(test4.enableLogs).to.be.true;
+    const test4 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: 'test' });
+    expect(test4.disableLogs).to.be.true;
 
-    const test5 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, enableLogs: null });
-    expect(test5.enableLogs).to.be.false;
+    const test5 = new TestingEnvironment({ verifications: verifications.working, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.working, disableLogs: null });
+    expect(test5.disableLogs).to.be.false;
   });
   it('should handel missing verifications', () => {
     expect(() => {

@@ -6,8 +6,8 @@ const Errors = require('./errors');
 const inputValidations = require('./input-validation');
 
 module.exports = class TestingEnvironment {
-  constructor({ dockerComposeFileLocation, dockerFileName, verifications, enableLogs }) {
-    this.enableLogs = !!enableLogs || false;
+  constructor({ dockerComposeFileLocation, dockerFileName, verifications, disableLogs }) {
+    this.disableLogs = !!disableLogs || false;
     this.defaultPromiseRetryOptions = { retries: 4 };
     inputValidations.requiredFields({ dockerComposeFileLocation, dockerFileName, verifications });
     this.dockerCompose = new DockerCompose(`${dockerComposeFileLocation}/${dockerFileName}`);
@@ -24,7 +24,7 @@ module.exports = class TestingEnvironment {
   }
 
   /* istanbul ignore next */
-  log(whatToLog) { if (this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
+  log(whatToLog) { if (!this.enableLogs) { console.log(`Docker-Testing - ${whatToLog}`); } }
 
   get services() { return this.dockerComposeFileJson.services; }
 
