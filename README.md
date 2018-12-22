@@ -1,12 +1,14 @@
 # docker-tester 
 
+Set up a testing environment with a docker-compose file and verify its up before running tests
+
+![img](https://i.imgur.com/nvxEBRi.jpg)
+
 [![](https://img.shields.io/npm/v/docker-tester.svg?style=for-the-badge)](https://www.npmjs.com/package/docker-tester)
 [![](https://img.shields.io/david/mintzo/docker-tester.svg?style=for-the-badge)](https://www.npmjs.com/package/docker-tester)
 ![](https://img.shields.io/npm/l/docker-tester.svg?style=for-the-badge)
 
 [![NPM](https://nodei.co/npm/docker-tester.png)](https://nodei.co/npm/docker-tester/)
-
-Set up a testing environment with a docker-compose file and verify its up before running tests
 
 -----------
 ## Install
