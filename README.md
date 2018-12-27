@@ -50,6 +50,7 @@ after(async function () {
 describe('Simple Usage', () => {
   it('some tests', () => {
     // test code only runs after environment is ready
+    const service = testingEnvironment.getActiveService('example-node-server') // getting service configuration  
   });
 });
 ```
@@ -67,7 +68,7 @@ services:
   example-mongo:
     image: mongo
     ports:
-      - 7001:80
+      - 80
     environment:
       verificationType: mongodb
 ```

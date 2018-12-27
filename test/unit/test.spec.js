@@ -9,11 +9,14 @@ const TestingEnvironment = require('../../src/index');
 const testData = require('./test-data');
 const Errors = require('../../src/errors');
 
-const dockerFiles = { missing: 'missing.docker-compose.yml',
+const dockerFiles = {
+  missing: 'missing.docker-compose.yml',
   working: 'test.docker-compose.yml',
   corrupt: 'corrupt.docker-compose.yml',
   noVerifications: 'no-verifications.docker-compose.yml',
-  mixed: 'mixed.yml' };
+  services: 'services.yml',
+  mixed: 'mixed.yml',
+};
 const verificationTypes = { simple: { promise: () => {} }, missing: { property: true }, notFunctions: { promise: true } };
 const verifications = { working: { postgres: verificationTypes.simple, node: verificationTypes.simple },
   notFunctions: { node: verificationTypes.notFunctions },
@@ -107,6 +110,7 @@ describe('getVerificationPromise', () => {
     expect(test.getVerificationPromise({ serviceName: 'node-test' })).to.equal(42);
   });
 });
+
 const promiseRetryOptions = { retries: 0 };
 describe('verifyServiceIsReady', () => {
   it('should handel no verifications services', async () => {
@@ -128,4 +132,18 @@ describe('verifyAllServices', () => {
     const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.mixed, disableLogs: true });
     await test.verifyAllServices();
   });
+});
+describe('buildServiceObjectFromJson', () => {
+  it('should build services', async () => {
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.services, disableLogs: true });
+    expect(test.getService('test')).to.deep.equal(testData.serviceJson.serviceTest1);
+  });
+  it('should build service with no ports', async () => {
+    const test = new TestingEnvironment({ verifications: { httpServer: { promise: () => Promise.resolve() } }, dockerComposeFileLocation: __dirname, dockerFileName: dockerFiles.services, disableLogs: true });
+    const service = test.getService('test3');
+    delete service.ports[0].external;
+    expect(service).to.deep.equal(testData.serviceJson.serviceTest2);
+  });
+});
+describe('getActiveService', () => {
 });

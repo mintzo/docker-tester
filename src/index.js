@@ -36,6 +36,15 @@ module.exports = class TestingEnvironment {
     return buildServiceObjectFromJson(this.services[serviceName]);
   }
 
+  async getActiveService(serviceName) {
+    const service = this.getService(serviceName);
+    service.ports = await Promise.all(service.ports.map(async (port) => {
+      if (port.external) { return port; }
+      return { ...port, external: await this.dockerCompose.getExternalPort(serviceName, port.internal) };
+    }));
+    return service;
+  }
+
   getServiceVerificationType(serviceName) {
     Errors.throwIf(this.getService(serviceName).environment && this.getService(serviceName).environment.verificationType, new Errors.MissingVerificationError(serviceName));
     const { verificationType } = this.getService(serviceName).environment;

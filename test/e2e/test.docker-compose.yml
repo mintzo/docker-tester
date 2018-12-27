@@ -30,6 +30,12 @@ services:
       - 7004:80
     environment:
       verificationType: httpServer
+  http-test_6:
+    image: nginxdemos/hello
+    container_name: name
+    ports:
+      - 80
+      - 4444
   # test3:
   #   image: postgres:9.4
   #   ports:
