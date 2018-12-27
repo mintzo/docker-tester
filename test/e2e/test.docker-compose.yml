@@ -33,12 +33,8 @@ services:
   http-test_6:
     image: nginxdemos/hello
     container_name: name
+    environment:
+      verificationType: httpServer
     ports:
       - 80
       - 4444
-  # test3:
-  #   image: postgres:9.4
-  #   ports:
-  #     - 5535:5432
-  #   environment:
-  #     POSTGRES_DB: test_db

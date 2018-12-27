@@ -64,9 +64,9 @@ module.exports = class TestingEnvironment {
     this.log(`Verifying the service '${serviceName}' is up`);
     try {
       const verificationPromise = this.getVerificationPromise({ serviceName });
-      await promiseRetry((retry, attemptNumber) => {
+      await promiseRetry(async (retry, attemptNumber) => {
         this.log(`trying to verify if service '${serviceName} is up. (attempt number ${attemptNumber})`);
-        return verificationPromise(this.getService(serviceName)).catch(retry);
+        return verificationPromise(await this.getActiveService(serviceName)).catch(retry);
       }, this.getRetryOptions({ serviceName }));
     } catch (error) {
       if (!(error instanceof Errors.MissingVerificationError)) {
