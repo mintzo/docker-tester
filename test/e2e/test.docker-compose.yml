@@ -38,3 +38,9 @@ services:
     ports:
       - 80
       - 4444
+  http-test_7:
+    image: nginxdemos/hello
+    environment:
+      verificationType: httpServer2
+    ports:
+      - 80

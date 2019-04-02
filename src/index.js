@@ -51,7 +51,7 @@ module.exports = class TestingEnvironment {
     return verificationType;
   }
 
-  getVerificationPromise({ serviceName }) { return this.verifications[this.getServiceVerificationType(serviceName)].promise; }
+  getVerificationFunction({ serviceName }) { return this.verifications[this.getServiceVerificationType(serviceName)].verificationFunction; }
 
   getRetryOptions({ serviceName }) {
     if (this.verifications[this.getServiceVerificationType(serviceName)].promiseRetryOptions) {
@@ -63,7 +63,7 @@ module.exports = class TestingEnvironment {
   async verifyServiceIsReady({ serviceName }) {
     this.log(`Verifying the service '${serviceName}' is up`);
     try {
-      const verificationPromise = this.getVerificationPromise({ serviceName });
+      const verificationPromise = this.getVerificationFunction({ serviceName });
       await promiseRetry(async (retry, attemptNumber) => {
         this.log(`trying to verify if service '${serviceName} is up. (attempt number ${attemptNumber})`);
         return verificationPromise(await this.getActiveService(serviceName)).catch(retry);

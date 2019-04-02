@@ -7,13 +7,16 @@ const TestingEnvironment = require('../../src/index');
 
 const testingEnvironment = new TestingEnvironment({ dockerComposeFileLocation: __dirname,
   dockerFileName: 'test.docker-compose.yml',
-  verifications: { httpServer: { promise: async (service) => {
+  verifications: { httpServer: { verificationFunction: async (service) => {
     const port = service.ports[0].external;
     const healthCheckUrl = `http://localhost:${port}`;
     const result = await axios.get(healthCheckUrl);
     return result;
   },
-  promiseRetryOptions: { retries: 5 } } } });
+  promiseRetryOptions: { retries: 5 } },
+  httpServer2: { verificationFunction: () => new Promise((resolve, reject) => {
+    resolve(true);
+  }) } } });
 
 before(async function () {
   this.timeout(0);

@@ -30,7 +30,7 @@ const testingEnvironment = new TestingEnvironment({
   dockerFileName: 'test.docker-compose.yml',
   verifications: { 
     httpServer: {  // 'verificationType' defined in the docker-compose file
-      promise: async (service) => {
+      verificationFunction: async (service) => { 
         // check that service is up (usually http request), reject if not ready
       },  promiseRetryOptions: { retries: 4 } }
   } });
@@ -96,7 +96,7 @@ required parameters:
 optional:
 
 * ```verifications``` - verifications by type that check when services are ready
-  * ```promise``` - *required* , the promise function to verify the service, receives the service information when called
+  * ```verificationFunction``` - *required* - an async function or a function that returns a promise to verify the service, receives the service information when called
   * ```promiseRetryOptions``` - _(optional)_ - promise retry settings, same as [promise-retry](https://www.npmjs.com/package/promise-retry)
     * ```retries``` - number of retries , _default 5_
 * ```disableLogs``` - disables logs docker-tester actions, when set to ```true```
@@ -108,7 +108,7 @@ new TestingEnvironment({
   dockerFileName: 'test.docker-compose.yml',
   verifications = {
   verificationType: { // the verification to run matching the verificationType in the docker-compose file
-    promise,
+    verificationFunction,
     promiseRetryOptions
   }
 }

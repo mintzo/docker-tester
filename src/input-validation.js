@@ -18,7 +18,7 @@ const checkServicesDefinition = ({ services, verifications, dockerComposeFileJso
 
 const checkVerifications = ({ verifications }) => {
   Object.keys(verifications).forEach((verificationType) => {
-    Errors.throwIf(verifications[verificationType].promise, new Errors.MissingVerificationPromiseError(verificationType));
+    Errors.throwIf(verifications[verificationType].verificationFunction, new Errors.MissingVerificationPFunctionError(verificationType));
   });
 };
 

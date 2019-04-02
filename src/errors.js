@@ -26,9 +26,9 @@ class MissingVerificationTypeError extends Error {
   }
 }
 
-class MissingVerificationPromiseError extends Error {
+class MissingVerificationPFunctionError extends Error {
   constructor(verificationType) {
-    super(`verification type '${verificationType}' , is missing a required promise function`);
+    super(`verification type '${verificationType}' , is missing a required 'verificationFunction' function`);
   }
 }
 
@@ -56,7 +56,7 @@ module.exports = {
   MissingServicesInDockerComposeError,
   LoadingDockerComposeError,
   MissingVerificationTypeError,
-  MissingVerificationPromiseError,
+  MissingVerificationPFunctionError,
   MissingVerificationError,
   MissingServiceError,
   CannotVerifyServiceIsUpError,
