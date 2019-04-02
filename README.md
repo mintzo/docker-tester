@@ -29,7 +29,7 @@ const testingEnvironment = new TestingEnvironment({
   dockerComposeFileLocation: __dirname,
   dockerFileName: 'test.docker-compose.yml',
   verifications: { 
-    httpServer: { 
+    httpServer: {  // 'verificationType' defined in the docker-compose file
       promise: async (service) => {
         // check that service is up (usually http request), reject if not ready
       },  promiseRetryOptions: { retries: 4 } }
