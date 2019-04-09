@@ -156,3 +156,45 @@ const testingEnvironment = new TestingEnvironment({
 await testingEnvironment.start({ verifyUp: false });
 await testingEnvironment.verifyAllServices();
 ```
+
+
+### .getActiveService(serviceName)
+returns an active service configuration by specified service name in the docker-compose file.
+
+can be used to retrieve external exposed ip, not defining an exposed ip can enable running tests in parallel.
+
+```yaml
+# example docker-compose.yml
+example-service:
+    environment:
+      verificationType: httpServer
+    ports:
+      - '3001:80' #pre defined port, can be a problem when running in parallel
+
+  example-service:
+    environment:
+      verificationType: httpServer
+    ports:
+      - 80 #no exposed port, docker will attach automatically
+```
+
+example code:
+```js
+const testingEnvironment = new TestingEnvironment({
+  // required options...
+});
+
+await testingEnvironment.start();
+await testingEnvironment.getActiveService('example-service');
+
+// .getActiveService() example result 
+{ 
+  image: 'node',
+  working_dir: '/service',
+  volumes: [ '../:/service' ],
+  ports: [ { external: "7000", internal: "3000" } ],
+  command: 'npm start',
+  environment: { verificationType: 'httpServer' } 
+}
+```
+
