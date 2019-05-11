@@ -73,6 +73,8 @@ services:
       verificationType: mongodb
 ```
 
+[Full code for this and more examples available here](https://github.com/mintzo/docker-tester-examples)
+
 ## Usage
 create a new TestingEnvironment instance, ```.start()``` and ```.stop()``` async function, use ```docker-compose up``` and ```docker-compose down```
 
